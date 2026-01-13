@@ -1,77 +1,90 @@
-# docker_demo_app
-demo app - developing with Docker
+Demo App – Developing with Docker
 
-This demo app shows a simple user profile app set up using
+This demo app shows a simple user profile application set up using:
 
-index.html with pure js and css styles
-nodejs backend with express module
-mongodb for data storage
+index.html with pure JavaScript and CSS styles
 
-All components are docker-based
+Node.js backend with Express module
+
+MongoDB for data storage
+
+All components are Docker-based.
+
 With Docker
-
 To start the application
+Step 1: Create Docker network
+docker network create mongo-network
 
-Step 1: Create docker network
+Step 2: Start MongoDB
+docker run -d -p 27017:27017 \
+-e MONGO_INITDB_ROOT_USERNAME=admin \
+-e MONGO_INITDB_ROOT_PASSWORD=password \
+--name mongodb \
+--net mongo-network \
+mongo
 
-docker network create mongo-network 
+Step 3: Start Mongo Express
+docker run -d -p 8081:8081 \
+-e ME_CONFIG_MONGODB_ADMINUSERNAME=admin \
+-e ME_CONFIG_MONGODB_ADMINPASSWORD=password \
+--net mongo-network \
+--name mongo-express \
+-e ME_CONFIG_MONGODB_SERVER=mongodb \
+mongo-express
 
 
-Step 2: start mongodb
+NOTE: Creating a docker network is optional.
+You can start both containers in the default network.
+In this case, just omit the --net flag in the docker run command.
 
-docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --name mongodb --net mongo-network mongo    
-
-
-Step 3: start mongo-express
-
-docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password --net mongo-network --name mongo-express -e ME_CONFIG_MONGODB_SERVER=mongodb mongo-express   
-
-
-NOTE: creating docker-network in optional. You can start both containers in a default network. In this case, just emit --net flag in docker run command
-Step 4: open mongo-express from browser
-
+Step 4: Open Mongo Express from browser
 http://localhost:8081
 
+Step 5: Create database and collection
 
-Step 5: create user-account db and users collection in mongo-express
-Step 6: Start your nodejs application locally - go to app directory of project
+Create database: user-account
 
-npm install 
-node server.js
+Create collection: users
+(using Mongo Express UI)
 
+Step 6: Start Node.js application locally
 
-Step 7: Access you nodejs application UI from browser
-
-http://localhost:3000
-
-
-With Docker Compose
-
-To start the application
-
-Step 1: start mongodb and mongo-express
-
-docker-compose -f docker-compose.yaml up
-
-
-You can access the mongo-express under localhost:8080 from your browser
-Step 2: in mongo-express UI - create a new database "my-db"
-Step 3: in mongo-express UI - create a new collection "users" in the database "my-db"
-Step 4: start node server
+Go to the app directory of the project:
 
 npm install
 node server.js
 
-
-Step 5: access the nodejs application from browser
-
+Step 7: Access Node.js application UI
 http://localhost:3000
 
+With Docker Compose
+To start the application
+Step 1: Start MongoDB and Mongo Express
+docker-compose -f docker-compose.yaml up
 
-To build a docker image from the application
+
+You can access Mongo Express at:
+
+http://localhost:8080
+
+Step 2: Create database
+
+Database name: my-db
+
+Step 3: Create collection
+
+Collection name: users
+(using Mongo Express UI)
+
+Step 4: Start Node.js server
+npm install
+node server.js
+
+Step 5: Access Node.js application
+http://localhost:3000
+
+Build Docker Image from the Application
+docker build -t my-app:1.0 .
 
 
-docker build -t my-app:1.0 .       
-
-
-The dot "." at the end of the command denotes location of the Dockerfile.
+The dot (.) at the end of the command denotes the location of the Dockerfile.
